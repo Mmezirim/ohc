@@ -114,7 +114,7 @@ export default function Home() {
       <section className="home-hero">
         <div className="container home-hero__grid">
           <div className="home-hero__text">
-            <Eyebrow line>{hero.eyebrow}</Eyebrow>
+            <Eyebrow>{hero.eyebrow}</Eyebrow>
             <h1 className="h1">{hero.title}</h1>
             <p className="lead">{hero.lead}</p>
             <div className="intro__actions">
