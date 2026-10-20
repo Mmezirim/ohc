@@ -1,3 +1,10 @@
+// Where the API lives. Empty = same origin (local dev, or Express serving the build); set VITE_API_URL
+// at build time when the site and the API are hosted separately (e.g. Hostinger + Render).
+export const API_BASE = (import.meta.env.VITE_API_URL || '').replace(/\/+$/, '');
+
+/** Uploaded media is stored on the API server; site images (/images/...) ship with the front end. */
+export const mediaUrl = (src) => (src && src.startsWith('/uploads/') ? API_BASE + src : src);
+
 export class ApiError extends Error {
   constructor(message, status, fields) {
     super(message);
@@ -9,7 +16,7 @@ export class ApiError extends Error {
 async function request(url, options) {
   let res;
   try {
-    res = await fetch(url, options);
+    res = await fetch(API_BASE + url, options);
   } catch {
     throw new ApiError('Network error — please check your connection and try again.', 0);
   }

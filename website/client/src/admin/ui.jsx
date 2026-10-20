@@ -1,6 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
 import Icon from '../components/Icon.jsx';
 import { api } from './api.js';
+import { mediaUrl } from '../lib/api.js';
 
 // ---- Toasts --------------------------------------------------------------------------------------
 const ToastContext = createContext(() => {});
@@ -194,7 +195,7 @@ export function MediaPicker({ open, onClose, onSelect }) {
             {shown.map((m) => (
               <li key={m.id}>
                 <button type="button" className="adm-media-tile" onClick={() => onSelect(m)} title={m.filename}>
-                  <img src={m.url} alt={m.alt || ''} loading="lazy" />
+                  <img src={mediaUrl(m.url)} alt={m.alt || ''} loading="lazy" />
                   <span>{m.filename}</span>
                 </button>
               </li>
@@ -264,7 +265,7 @@ export function FieldInput({ field, value, onChange, error, disabled }) {
     case 'image':
       control = (
         <div className="adm-image-field">
-          {value ? <img src={value} alt="" /> : <div className="adm-image-field__empty">No image</div>}
+          {value ? <img src={mediaUrl(value)} alt="" /> : <div className="adm-image-field__empty">No image</div>}
           <div className="adm-actions">
             <button type="button" className="adm-btn adm-btn--ghost" onClick={() => setPicking(true)} disabled={disabled} aria-describedby={describedBy}>
               {value ? 'Change image' : 'Choose image'}

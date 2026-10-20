@@ -9,6 +9,7 @@ import cors from 'cors';
 import { initDb } from './db.js';
 import publicRoutes from './routes/public.js';
 import adminRoutes, { UPLOAD_DIR } from './routes/admin.js';
+import { allowedOrigins } from './admin/session.js';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const clientDist = path.resolve(here, '../../client/dist');
@@ -40,8 +41,10 @@ app.use(
 );
 app.use(compression());
 
-const origins = (process.env.CORS_ORIGIN || '').split(',').map((s) => s.trim()).filter(Boolean);
-if (origins.length) app.use('/api', cors({ origin: origins }));
+// When the site is hosted elsewhere (e.g. Hostinger), list its origin(s) in CORS_ORIGIN. Credentials are
+// allowed so the admin panel's session cookie is sent; requireAuth() still checks the origin and CSRF token.
+const origins = allowedOrigins();
+if (origins.length) app.use('/api', cors({ origin: origins, credentials: true, maxAge: 600 }));
 
 // Admin API first (larger body limit for blog posts); everything else gets the small public limit.
 app.use('/api/admin', express.json({ limit: '300kb' }), adminRoutes);
@@ -58,6 +61,8 @@ app.use(
     fallthrough: false,
     setHeaders(res) {
       res.setHeader('Cache-Control', 'public, max-age=2592000');
+      // Let the separately hosted site show these images.
+      res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
       res.setHeader('Content-Security-Policy', "default-src 'none'; img-src 'self'; style-src 'none'; sandbox");
     },
   }),

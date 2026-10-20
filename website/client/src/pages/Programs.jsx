@@ -5,11 +5,12 @@ import Reveal from '../components/Reveal.jsx';
 import { DarkCta, Eyebrow, PageIntro } from '../components/Sections.jsx';
 import { useContent } from '../lib/content.jsx';
 import { usePageMeta } from '../lib/hooks.js';
+import { mediaUrl } from '../lib/api.js';
 
 export function ProgramCard({ program: p }) {
   return (
     <Link to={`/programs/${p.slug}`} className="card card--media card--link program-card">
-      <img src={p.image} alt={`${p.title} flyer`} loading="lazy" decoding="async" />
+      <img src={mediaUrl(p.image)} alt={`${p.title} flyer`} loading="lazy" decoding="async" />
       <div className="card__content">
         <p className="card__label">{p.category}</p>
         <h3 className="card__title">{p.title}</h3>
@@ -54,7 +55,7 @@ export default function Programs() {
         <section className="section section--white">
           <div className="container split">
             <Reveal as="figure" className="media">
-              <img src={featured.image} alt={`${featured.title} flyer`} loading="lazy" decoding="async" />
+              <img src={mediaUrl(featured.image)} alt={`${featured.title} flyer`} loading="lazy" decoding="async" />
             </Reveal>
             <Reveal delay={80}>
               <Eyebrow>Featured program · {featured.category}</Eyebrow>

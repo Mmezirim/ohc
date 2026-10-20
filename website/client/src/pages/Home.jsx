@@ -5,7 +5,7 @@ import { YouTubePlayer } from '../components/YouTube.jsx';
 import { Eyebrow, Scripture } from '../components/Sections.jsx';
 import { useContent, usePageCopy } from '../lib/content.jsx';
 import { usePageMeta } from '../lib/hooks.js';
-import { formatDate } from '../lib/api.js';
+import { formatDate, mediaUrl } from '../lib/api.js';
 import { splitSermonTitle, useSermons } from '../lib/sermons.js';
 
 const VALUES = ['Jesus at the centre', 'Everyone welcome', 'Growing together', 'Love in action'];
@@ -262,7 +262,7 @@ export default function Home() {
             {(c.events || []).map((p, i) => (
               <Reveal key={p.slug} delay={i * 60}>
                 <Link to={`/programs/${p.slug}`} className="card card--media card--link program-card">
-                  <img src={p.image} alt={`${p.title} flyer`} loading="lazy" decoding="async" />
+                  <img src={mediaUrl(p.image)} alt={`${p.title} flyer`} loading="lazy" decoding="async" />
                   <div className="card__content">
                     <p className="card__label">{p.category}</p>
                     <h3 className="card__title">{p.title}</h3>

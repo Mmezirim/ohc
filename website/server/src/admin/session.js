@@ -91,9 +91,15 @@ export async function loadSession(req) {
 
 const SAFE_METHODS = new Set(['GET', 'HEAD', 'OPTIONS']);
 
-function sameOrigin(req) {
+/** Origins of a separately hosted front end (CORS_ORIGIN, comma-separated). */
+export function allowedOrigins() {
+  return (process.env.CORS_ORIGIN || '').split(',').map((s) => s.trim().replace(/\/+$/, '')).filter(Boolean);
+}
+
+export function sameOrigin(req) {
   const origin = req.get('origin');
   if (!origin) return true; // same-origin fetches from older browsers omit it; SameSite=Strict still applies
+  if (allowedOrigins().includes(origin)) return true;
   try {
     const o = new URL(origin);
     const host = req.get('x-forwarded-host') || req.get('host');

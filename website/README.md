@@ -43,17 +43,40 @@ On Hostinger (or any Node host), point the app at `server/src/index.js` and set 
 `server/.env.example`. Hashed assets are served with long-lived cache headers. Any unknown path
 falls back to `index.html` so client-side routes work.
 
-## Deploying to Render
+## Split hosting: site on Hostinger, API on Render
 
-`render.yaml` (repo root) is a Render Blueprint: Render dashboard → **New → Blueprint** → choose the
-GitHub repo → paste the Aiven Service URI as `DATABASE_URL` when asked → **Apply**.
+The site and the API can run on different hosts. Give the API a **subdomain of the site's domain**
+(e.g. site `oakhousechurch.org`, API `api.oakhousechurch.org`). Admin sign-in uses a `SameSite=Strict`
+cookie, which browsers only send between the same site, so it **won't work from a bare `*.onrender.com` address**.
 
-- Plan **Starter** with a 1 GB disk mounted at `/var/data` — uploaded images live in `/var/data/uploads`.
-  (Free instances wipe their disk on every deploy/restart and sleep after 15 minutes idle.)
-- Build: `npm ci --include=dev && npm run build` · Pre-deploy: `npm run db:setup` (safe to repeat) ·
-  Start: `npm start` · Health check: `/api/health`.
+**API on Render.** `render.yaml` (repo root) is a Blueprint for it, or set the service up by hand:
+
+| Setting | Value |
+|---|---|
+| Root directory | `website/server` |
+| Build command | `npm ci` |
+| Pre-deploy command | `npm run db:setup` (safe to repeat) |
+| Start command | `npm start` |
+| Health check path | `/api/health` |
+| Env | `NODE_ENV=production`, `DATABASE_URL` (Aiven Service URI), `CORS_ORIGIN=https://oakhousechurch.org,https://www.oakhousechurch.org`, `UPLOAD_DIR=/var/data/uploads`, optional `SMTP_*` |
+
+- Plan **Starter** with a 1 GB disk mounted at `/var/data` for uploaded images. (Free instances wipe their
+  disk on every deploy or restart, and sleep after 15 minutes idle.)
+- Custom domain: service → Settings → Custom Domains → `api.oakhousechurch.org`, then add the CNAME it shows
+  in Hostinger's DNS zone. HTTPS is automatic.
 - If Aiven has an IP allow-list, add Render's outbound IPs (service → Connect → Outbound).
-- Custom domain: service → Settings → Custom Domains, then add the DNS records Render shows (HTTPS is automatic).
+
+**Site on Hostinger.** Build it on your machine with the API address baked in, then upload the output:
+
+```bash
+cd website/client
+echo VITE_API_URL=https://api.oakhousechurch.org > .env.production
+npm run build                 # → client/dist
+```
+
+Upload everything **inside** `client/dist` to `public_html`, including the hidden `.htaccess`. It makes
+routes like `/about` and `/admin` work on refresh. Rebuild and re-upload after any front-end change. API and
+content changes don't need it.
 
 ## Editing content
 

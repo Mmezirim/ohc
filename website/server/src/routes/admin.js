@@ -23,7 +23,7 @@ import {
   verifyPassword,
   verifyTotp,
 } from '../admin/security.js';
-import { createSession, destroySession, destroyUserSessions, purgeExpiredSessions, requireAuth } from '../admin/session.js';
+import { createSession, destroySession, destroyUserSessions, purgeExpiredSessions, requireAuth, sameOrigin } from '../admin/session.js';
 
 const router = Router();
 const wrap = (fn) => (req, res, next) => Promise.resolve(fn(req, res, next)).catch(next);
@@ -59,16 +59,7 @@ const loginLimiter = rateLimit({
 });
 
 function sameOriginOnly(req, res, next) {
-  const origin = req.get('origin');
-  if (origin) {
-    try {
-      if (new URL(origin).host !== (req.get('x-forwarded-host') || req.get('host'))) {
-        return res.status(403).json({ error: 'Request blocked (cross-origin).' });
-      }
-    } catch {
-      return res.status(403).json({ error: 'Request blocked.' });
-    }
-  }
+  if (!sameOrigin(req)) return res.status(403).json({ error: 'Request blocked (cross-origin).' });
   if (!req.is('application/json')) return res.status(415).json({ error: 'Unsupported request.' });
   next();
 }

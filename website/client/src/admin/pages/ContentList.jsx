@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import Icon from '../../components/Icon.jsx';
 import { api } from '../api.js';
+import { mediaUrl } from '../../lib/api.js';
 import { useSchema } from '../AdminApp.jsx';
 import { PageHeader, Spinner, formatWhen, useConfirm, useLoad, useToast } from '../ui.jsx';
 
@@ -80,7 +81,7 @@ export default function ContentList() {
         <ul className="adm-list">
           {rows.map((row) => (
             <li key={row.id} className="adm-list__item">
-              {def.imageField && (row[def.imageField] ? <img src={row[def.imageField]} alt="" className="adm-thumb" loading="lazy" /> : <span className="adm-thumb adm-thumb--empty" />)}
+              {def.imageField && (row[def.imageField] ? <img src={mediaUrl(row[def.imageField])} alt="" className="adm-thumb" loading="lazy" /> : <span className="adm-thumb adm-thumb--empty" />)}
               <Link to={`/admin/content/${resource}/${row.id}`} className="adm-list__main">
                 <strong>{row[def.titleField] || '(untitled)'}</strong>
                 <span className="adm-muted">{subtitle(row)}</span>

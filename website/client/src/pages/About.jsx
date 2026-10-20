@@ -4,6 +4,7 @@ import Reveal from '../components/Reveal.jsx';
 import { DarkCta, Eyebrow, PageIntro, Pathways, Scripture } from '../components/Sections.jsx';
 import { useContent } from '../lib/content.jsx';
 import { usePageMeta } from '../lib/hooks.js';
+import { mediaUrl } from '../lib/api.js';
 
 const STORY = [
   'Our story at Oak House Church is a story of vision, faith, spiritual identity and becoming.',
@@ -116,7 +117,7 @@ export default function About() {
           <ul className="leaders">
             {(c.leaders || []).map((l, i) => (
               <Reveal as="li" className="leader" key={l.name} delay={(i % 3) * 60}>
-                <img src={l.photo} alt={`Portrait of ${l.name}`} loading="lazy" decoding="async" width="500" height="600" />
+                <img src={mediaUrl(l.photo)} alt={`Portrait of ${l.name}`} loading="lazy" decoding="async" width="500" height="600" />
                 <h3 className="h4">{l.name}</h3>
                 <p className="leader__role">{l.role}</p>
               </Reveal>

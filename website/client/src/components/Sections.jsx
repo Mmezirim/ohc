@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import Icon from './Icon.jsx';
 import Reveal from './Reveal.jsx';
 import { usePageCopy } from '../lib/content.jsx';
+import { mediaUrl } from '../lib/api.js';
 
 export function Eyebrow({ children, line = false, as: Tag = 'p', className = '' }) {
   return <Tag className={`eyebrow ${line ? 'eyebrow--line' : ''} ${className}`}>{children}</Tag>;
@@ -27,7 +28,7 @@ export function PageIntro({ page, actions, image, imageAlt = '', caption, ...def
         </div>
         {image && (
           <figure className="media">
-            <img src={image} alt={imageAlt} fetchpriority="high" decoding="async" />
+            <img src={mediaUrl(image)} alt={imageAlt} fetchpriority="high" decoding="async" />
             {caption && <figcaption className="caption">{caption}</figcaption>}
           </figure>
         )}

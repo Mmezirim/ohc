@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react';
 import Icon from '../../components/Icon.jsx';
 import { api } from '../api.js';
+import { mediaUrl } from '../../lib/api.js';
 import { PageHeader, Spinner, useConfirm, useLoad, useToast } from '../ui.jsx';
 
 const ACCEPT = 'image/jpeg,image/png,image/webp,image/gif';
@@ -57,7 +58,7 @@ export default function Media() {
   };
 
   const copy = async (url) => {
-    await navigator.clipboard?.writeText(window.location.origin + url).catch(() => {});
+    await navigator.clipboard?.writeText(new URL(mediaUrl(url), window.location.origin).href).catch(() => {});
     notify('Link copied.');
   };
 
@@ -99,7 +100,7 @@ export default function Media() {
             {items.map((m) => (
               <li key={m.id}>
                 <button type="button" className={`adm-media-tile ${selected?.id === m.id ? 'is-selected' : ''}`} onClick={() => setSelected(m)} aria-pressed={selected?.id === m.id}>
-                  <img src={m.url} alt={m.alt || ''} loading="lazy" />
+                  <img src={mediaUrl(m.url)} alt={m.alt || ''} loading="lazy" />
                   <span>{m.filename}</span>
                 </button>
               </li>
@@ -109,7 +110,7 @@ export default function Media() {
 
           {selected && (
             <aside className="adm-card adm-media-detail" aria-label="Image details">
-              <img src={selected.url} alt={selected.alt || ''} />
+              <img src={mediaUrl(selected.url)} alt={selected.alt || ''} />
               <dl className="adm-dl">
                 <dt>File</dt>
                 <dd>{selected.filename}</dd>

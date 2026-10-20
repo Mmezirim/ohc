@@ -1,5 +1,7 @@
 // Admin API client. Session lives in an httpOnly cookie (never readable by JS); the CSRF token is
 // kept in memory only and sent as a header on every state-changing request.
+import { API_BASE } from '../lib/api.js';
+
 let csrfToken = null;
 export const setCsrfToken = (t) => {
   csrfToken = t;
@@ -20,10 +22,10 @@ async function request(method, url, body) {
   if (method !== 'GET' && csrfToken) headers['X-CSRF-Token'] = csrfToken;
   let res;
   try {
-    res = await fetch(`/api/admin${url}`, {
+    res = await fetch(`${API_BASE}/api/admin${url}`, {
       method,
       headers,
-      credentials: 'same-origin',
+      credentials: 'include',
       cache: 'no-store',
       body: body === undefined ? undefined : isForm ? body : JSON.stringify(body),
     });

@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Reveal from '../components/Reveal.jsx';
 import { Eyebrow } from '../components/Sections.jsx';
-import { formatDate, getJson } from '../lib/api.js';
+import { formatDate, getJson, mediaUrl } from '../lib/api.js';
 import { usePageMeta } from '../lib/hooks.js';
 
 export default function Blogs() {
@@ -35,7 +35,7 @@ export default function Blogs() {
             <Reveal as="article" className="post-card" key={p.slug} delay={i * 80}>
               <Link to={`/blog/${p.slug}`} className="post-card__link">
                 <div className="post-card__image">
-                  <img src={p.featuredImage} alt="" loading="lazy" decoding="async" />
+                  <img src={mediaUrl(p.featuredImage)} alt="" loading="lazy" decoding="async" />
                 </div>
                 <div className="post-card__body">
                   <span className="post-card__cat">{p.category}</span>

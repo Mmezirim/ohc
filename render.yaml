@@ -1,13 +1,13 @@
-# Render Blueprint — Oak House Church website (React + Node/Express + MySQL on Aiven)
+# Render Blueprint — Oak House Church API (Node/Express + MySQL on Aiven). The site itself is on Hostinger.
 # Render dashboard → New → Blueprint → pick this repo. Secrets marked `sync: false` are asked for on first deploy.
 services:
   - type: web
-    name: oakhouse-church
+    name: oakhouse-api
     runtime: node
     plan: starter # needed for the persistent disk below (free instances lose uploaded images on every deploy/restart)
     region: frankfurt # closest Render region to Lagos
-    rootDir: website
-    buildCommand: npm ci --include=dev && npm run build
+    rootDir: website/server
+    buildCommand: npm ci
     preDeployCommand: npm run db:setup # idempotent: applies schema changes/migrations, never overwrites content
     startCommand: npm start
     healthCheckPath: /api/health
@@ -23,6 +23,8 @@ services:
         value: "20"
       - key: UPLOAD_DIR
         value: /var/data/uploads
+      - key: CORS_ORIGIN # the Hostinger site, e.g. https://oakhousechurch.org,https://www.oakhousechurch.org
+        sync: false
       - key: DATABASE_URL # Aiven "Service URI" (mysql://avnadmin:…@…:24572/ohc_db?ssl-mode=REQUIRED)
         sync: false
       - key: YOUTUBE_CHANNEL_ID

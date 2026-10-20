@@ -6,6 +6,7 @@ import NotFound from './NotFound.jsx';
 import { ProgramCard } from './Programs.jsx';
 import { useContent } from '../lib/content.jsx';
 import { usePageMeta } from '../lib/hooks.js';
+import { mediaUrl } from '../lib/api.js';
 
 export default function ProgramDetail() {
   const { slug } = useParams();
@@ -37,7 +38,7 @@ export default function ProgramDetail() {
         <div className="container program">
           <div>
             <Reveal as="figure" className="program__media">
-              <img src={p.image} alt={`${p.title} flyer`} decoding="async" />
+              <img src={mediaUrl(p.image)} alt={`${p.title} flyer`} decoding="async" />
             </Reveal>
             <Reveal className="program__about">
               <Eyebrow>About this program</Eyebrow>
