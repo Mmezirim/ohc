@@ -1,30 +1,31 @@
-# Render Blueprint — Oak House Church API (Node/Express + MySQL on Aiven). The site itself is on Hostinger.
+# Render Blueprint — Oak House Church website (React + Node/Express + MySQL on Aiven). One service serves the site and the API.
 # Render dashboard → New → Blueprint → pick this repo. Secrets marked `sync: false` are asked for on first deploy.
 services:
   - type: web
-    name: oakhouse-api
+    name: oakhouse-church
     runtime: node
-    plan: starter # needed for the persistent disk below (free instances lose uploaded images on every deploy/restart)
+    # Testing: free plan. It has no persistent disk or pre-deploy step, so uploaded images are lost on every
+    # deploy/restart and the DB setup runs in the build. For launch: plan starter, uncomment preDeployCommand
+    # and the disk + UPLOAD_DIR below, and drop `&& npm run db:setup` from the build.
+    plan: free
     region: frankfurt # closest Render region to Lagos
-    rootDir: website/server
-    buildCommand: npm ci
-    preDeployCommand: npm run db:setup # idempotent: applies schema changes/migrations, never overwrites content
+    rootDir: website
+    buildCommand: npm ci --include=dev && npm run build && npm run db:setup # db:setup is idempotent, never overwrites content
+    # preDeployCommand: npm run db:setup
     startCommand: npm start
     healthCheckPath: /api/health
     autoDeploy: true
-    disk:
-      name: uploads
-      mountPath: /var/data
-      sizeGB: 1
+    # disk:
+    #   name: uploads
+    #   mountPath: /var/data
+    #   sizeGB: 1
     envVars:
       - key: NODE_ENV
         value: production
       - key: NODE_VERSION
         value: "20"
-      - key: UPLOAD_DIR
-        value: /var/data/uploads
-      - key: CORS_ORIGIN # the Hostinger site, e.g. https://oakhousechurch.org,https://www.oakhousechurch.org
-        sync: false
+      # - key: UPLOAD_DIR
+      #   value: /var/data/uploads
       - key: DATABASE_URL # Aiven "Service URI" (mysql://avnadmin:…@…:24572/ohc_db?ssl-mode=REQUIRED)
         sync: false
       - key: YOUTUBE_CHANNEL_ID
