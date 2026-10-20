@@ -1,0 +1,44 @@
+# Render Blueprint — Oak House Church website (React + Node/Express + MySQL on Aiven)
+# Render dashboard → New → Blueprint → pick this repo. Secrets marked `sync: false` are asked for on first deploy.
+services:
+  - type: web
+    name: oakhouse-church
+    runtime: node
+    plan: starter # needed for the persistent disk below (free instances lose uploaded images on every deploy/restart)
+    region: frankfurt # closest Render region to Lagos
+    rootDir: website
+    buildCommand: npm ci --include=dev && npm run build
+    preDeployCommand: npm run db:setup # idempotent: applies schema changes/migrations, never overwrites content
+    startCommand: npm start
+    healthCheckPath: /api/health
+    autoDeploy: true
+    disk:
+      name: uploads
+      mountPath: /var/data
+      sizeGB: 1
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: NODE_VERSION
+        value: "20"
+      - key: UPLOAD_DIR
+        value: /var/data/uploads
+      - key: DATABASE_URL # Aiven "Service URI" (mysql://avnadmin:…@…:24572/ohc_db?ssl-mode=REQUIRED)
+        sync: false
+      - key: YOUTUBE_CHANNEL_ID
+        value: UCFA5ZQKPtYYMCzRzOq7rA3g
+      - key: YOUTUBE_LIVE_CHANNEL_ID
+        value: UCu27rtNX51H-aHvH4IFRbVA
+      - key: YOUTUBE_CACHE_MINUTES
+        value: "30"
+      # Optional e-mail notifications for new enquiries
+      - key: SMTP_HOST
+        sync: false
+      - key: SMTP_PORT
+        value: "587"
+      - key: SMTP_USER
+        sync: false
+      - key: SMTP_PASS
+        sync: false
+      - key: NOTIFY_EMAIL
+        value: contact@oakhousechurch.org
